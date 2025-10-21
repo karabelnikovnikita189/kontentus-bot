@@ -9,6 +9,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters import CommandStart
 import os
 from dotenv import load_dotenv
+import threading
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 # === 1. Настройки ===
 load_dotenv()
@@ -277,6 +279,17 @@ async def handle_message(message: Message):
 async def main():
     print("🤖 Бот запущен!")
     await dp.start_polling(bot)
+
+def run_web_server():
+    try:
+        server = HTTPServer(('0.0.0.0', 8080), SimpleHTTPRequestHandler)
+        print("✅ Render: фиктивный HTTP сервер запущен на порту 8080")
+        server.serve_forever()
+    except Exception as e:
+        print("⚠️ Ошибка при запуске фиктивного веб-сервера:", e)
+
+# Запускаем в отдельном потоке
+threading.Thread(target=run_web_server, daemon=True).start()
 
 if __name__ == "__main__":
     asyncio.run(main())
